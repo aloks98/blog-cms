@@ -23,6 +23,9 @@ dependencies {
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("at.favre.lib:bcrypt:0.9.0")
+    implementation("org.mongodb:mongodb-driver-sync:4.3.1")
+    implementation("org.mongodb:bson:4.3.1")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
 }
