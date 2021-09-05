@@ -1,13 +1,25 @@
 package dev.aloks.models
 
-data class Success (
-    val status: Int,
-    val message: String,
-    val data: Any
-    )
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
+import java.lang.Exception
 
-data class Error (
-    val status: Int,
+@Serializable
+data class SuccessfulResponse (
+    val status: Int? = 200,
+    val message: String? = "Request Successfull",
+    @Contextual val data: Any? = null
+)
+
+@Serializable
+data class ErrorResponse (
+    val status: Int? = 500,
     val message: String,
-    val error: Any
-    )
+    val error: String? = null
+)
+
+data class ServiceFunctionResponse (
+    val success: Boolean,
+    val message: String,
+    val error: Exception? = null
+)
