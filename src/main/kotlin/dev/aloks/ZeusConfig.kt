@@ -12,7 +12,15 @@ class ZeusConfig {
         }
 
         fun getJwtSecret(): String {
-            return getConfig().property("zeus.secrets.jwt").toString()
+            return getConfig().property("zeus.jwt.secret").getString()
+        }
+
+        fun getJwtIssuer(): String {
+            return getConfig().property("zeus.jwt.issuer").getString()
+        }
+
+        fun getJwtAudience(): String {
+            return getConfig().property("zeus.jwt.audience").getString()
         }
 
         fun getDomain(): String {

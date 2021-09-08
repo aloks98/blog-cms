@@ -6,7 +6,7 @@ import org.bson.types.ObjectId
 
 @Serializable
 data class User (
-    @Contextual val _id: ObjectId,
+    @Contextual val _id: ObjectId = ObjectId(),
     val first_name: String,
     val last_name: String,
     val email: String,
@@ -38,4 +38,10 @@ data class UserResponse (
 data class LoginRequest (
     val uid: String,
     val password: String
+)
+
+@Serializable
+data class UserLoginResponse (
+    val username: String,
+    val token: String
 )
