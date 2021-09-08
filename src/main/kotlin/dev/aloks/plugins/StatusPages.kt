@@ -9,9 +9,13 @@ import java.lang.RuntimeException
 
 fun Application.configureStatusPages() {
     install(StatusPages) {
-        exception<InternalServerException> { cause ->
+        exception<InternalServerExceptionWithError> { cause ->
             call.response.status(HttpStatusCode.InternalServerError)
             call.respond(ErrorResponse(500, cause.cause.localizedMessage, cause.cause.stackTraceToString()))
+        }
+        exception<InternalServerException> { cause ->
+            call.response.status(HttpStatusCode.InternalServerError)
+            call.respond(ErrorResponse(500, cause.message, cause.stackTraceToString()))
         }
         exception<BadRequestException> { cause ->
             call.response.status(HttpStatusCode.BadRequest)
@@ -33,9 +37,13 @@ fun Application.configureStatusPages() {
 
 }
 
-class InternalServerException(
+class InternalServerExceptionWithError(
     override val message: String = "Something bad happened.",
     override val cause: Throwable
+): RuntimeException()
+
+class InternalServerException(
+    override val message: String = "Something bad happened.",
 ): RuntimeException()
 
 class BadRequestException (

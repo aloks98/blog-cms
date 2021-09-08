@@ -39,3 +39,9 @@ data class LoginRequest (
     val uid: String,
     val password: String
 )
+
+@Serializable
+data class UserLoginResponse (
+    val username: String,
+    val token: String
+)

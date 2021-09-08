@@ -1,9 +1,6 @@
 package dev.aloks.routes
 
-import dev.aloks.models.LoginRequest
-import dev.aloks.models.SuccessfulResponse
-import dev.aloks.models.UserRequest
-import dev.aloks.plugins.BadRequestException
+import dev.aloks.models.*
 import dev.aloks.services.UserService
 import io.ktor.application.*
 import io.ktor.http.*
@@ -22,7 +19,9 @@ fun Route.user() {
         }
         post("login") {
             val (uid, password) = call.receive<LoginRequest>()
-            userService.login(uid, password)
+            val login = userService.login(uid, password)
+            call.response.status(HttpStatusCode.OK)
+            call.respond(SuccessfulLoginResponse(data = login.data as UserLoginResponse))
         }
 
     }
