@@ -7,6 +7,9 @@ import dev.aloks.models.UserRequest
 interface UserRepository {
     fun register(user: UserRequest): ServiceFunctionResponse
     fun login(uid: String, password: String): ServiceFunctionResponse
-    fun resetPassword(uid: String)
-    fun updatePassword()
+    fun generateResetPasswordLink(uid: String)
+    fun verifyResetPasswordToken(t: String): ServiceFunctionResponse
+    fun resetPassword(t: String, password: String): ServiceFunctionResponse
+    fun generateMagicLink(uid: String)
+    fun magicLinkLogin(t: String): ServiceFunctionResponse
 }

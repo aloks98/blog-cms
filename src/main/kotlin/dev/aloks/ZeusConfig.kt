@@ -23,8 +23,12 @@ class ZeusConfig {
             return getConfig().property("zeus.jwt.audience").getString()
         }
 
-        fun getDomain(): String {
-            return getConfig().property("zeus.domain").toString()
+        fun getAppDomain(): String {
+            return getConfig().property("zeus.appDomain").getString()
+        }
+
+        fun getBaseDomain(): String {
+            return getConfig().property("zeus.baseDomain").getString()
         }
 
         fun isDev(): Boolean {
@@ -37,6 +41,10 @@ class ZeusConfig {
 
         fun getDbName(): String {
             return getConfig().property("db.mongo.db_name").getString()
+        }
+
+        fun getSendgridApiKey(): String {
+            return getConfig().property("zeus.sendgrid.key").getString()
         }
     }
 }

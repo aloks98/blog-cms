@@ -19,7 +19,7 @@ data class SuccessfulResponse (
 @Serializable
 data class ErrorResponse (
     val status: Int? = 500,
-    val message: String,
+    val message: String? = "Something went Wrong",
     val error: String? = null
 )
 

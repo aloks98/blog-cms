@@ -1,5 +1,6 @@
 package dev.aloks.plugins
 
+import com.auth0.jwt.exceptions.TokenExpiredException
 import dev.aloks.models.ErrorResponse
 import io.ktor.application.*
 import io.ktor.features.*
@@ -9,38 +10,39 @@ import java.lang.RuntimeException
 
 fun Application.configureStatusPages() {
     install(StatusPages) {
-        exception<InternalServerExceptionWithError> { cause ->
-            call.response.status(HttpStatusCode.InternalServerError)
-            call.respond(ErrorResponse(500, cause.cause.localizedMessage, cause.cause.stackTraceToString()))
-        }
-        exception<InternalServerException> { cause ->
-            call.response.status(HttpStatusCode.InternalServerError)
-            call.respond(ErrorResponse(500, cause.message, cause.stackTraceToString()))
-        }
-        exception<BadRequestException> { cause ->
-            call.response.status(HttpStatusCode.BadRequest)
-            call.respond(ErrorResponse(400, cause.message, cause.stackTraceToString()))
-        }
-        exception<ForbiddenException> { cause ->
-            call.response.status(HttpStatusCode.Forbidden)
-            call.respond(ErrorResponse(403, cause.message, cause.stackTraceToString()))
-        }
-        exception<UnauthorizedException> { cause ->
-            call.response.status(HttpStatusCode.Unauthorized)
-            call.respond(ErrorResponse(401, cause.message, cause.stackTraceToString()))
-        }
-        exception<NotFoundException> { cause ->
-            call.response.status(HttpStatusCode.NotFound)
-            call.respond(ErrorResponse(404, cause.message, cause.stackTraceToString()))
+        exception<Throwable> { cause ->
+            when(cause) {
+                is InternalServerException -> {
+                    call.response.status(HttpStatusCode.InternalServerError)
+                    call.respond(ErrorResponse(500, cause.message, cause.stackTraceToString()))
+                }
+                is BadRequestException -> {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(ErrorResponse(400, cause.message, cause.stackTraceToString()))
+                }
+                is ForbiddenException -> {
+                    call.response.status(HttpStatusCode.Forbidden)
+                    call.respond(ErrorResponse(403, cause.message, cause.stackTraceToString()))
+                }
+                is UnauthorizedException -> {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(ErrorResponse(401, cause.message, cause.stackTraceToString()))
+                }
+                is NotFoundException -> {
+                    call.response.status(HttpStatusCode.NotFound)
+                    call.respond(ErrorResponse(404, cause.message, cause.stackTraceToString()))
+                }
+                else -> {
+                    val trace = cause.cause?.stackTraceToString() ?: cause.stackTraceToString()
+                    val message = cause.cause?.message ?: cause.message
+                    call.response.status(HttpStatusCode.InternalServerError)
+                    call.respond(ErrorResponse(500, message, trace))
+                }
+            }
         }
     }
 
 }
-
-class InternalServerExceptionWithError(
-    override val message: String = "Something bad happened.",
-    override val cause: Throwable
-): RuntimeException()
 
 class InternalServerException(
     override val message: String = "Something bad happened.",
