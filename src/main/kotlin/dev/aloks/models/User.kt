@@ -41,6 +41,11 @@ data class LoginRequest (
 )
 
 @Serializable
+data class PasswordResetRequest (
+    val password: String
+        )
+
+@Serializable
 data class UserLoginResponse (
     val username: String,
     val token: String
