@@ -46,6 +46,11 @@ data class PasswordResetRequest (
         )
 
 @Serializable
+data class MagicLinkRequest (
+    val uid: String
+        )
+
+@Serializable
 data class UserLoginResponse (
     val username: String,
     val token: String

@@ -131,5 +131,65 @@ class UserService: UserRepository {
             ServiceFunctionResponse(false, "Function Exception", ex)
         }
     }
+
+    override fun generateMagicLink(uid: String) {
+        val user = userCollection.findOne(User::email eq uid)
+            ?: throw NotFoundException("Email not found. Please provide a valid email address.")
+        val token = JWT.create()
+            .withAudience(ZeusConfig.getJwtAudience())
+            .withIssuer(ZeusConfig.getJwtIssuer())
+            .withClaim("username", user.username)
+            .withClaim("type", TokenType.TOKEN_MAGIC_URL.toString())
+            .withIssuedAt((Date(System.currentTimeMillis())))
+            .withExpiresAt(Date(System.currentTimeMillis() + 600000))
+            .sign(Algorithm.HMAC256(ZeusConfig.getJwtSecret()))
+        val sha1 = DigestUtils.sha1Hex(token)
+        val newToken = Token(ObjectId(), token, sha1)
+        tokenCollection.insertOne(newToken)
+
+        val appDomain = ZeusConfig.getAppDomain()
+
+        val from = Email("no-reply@aloks.dev")
+        val to = Email(user.email)
+        val subject = "Magic link to login"
+        val content = Content()
+        content.type = "text/html"
+        content.value = "<p>Please <a href='${appDomain}/login/magic?t=${sha1}'>click here</a> to login into your account.</p>"
+        val mail = Mail(from, subject, to, content)
+
+        val sg = SendGrid(ZeusConfig.getSendgridApiKey())
+        val request = Request()
+        request.method = Method.POST
+        request.endpoint = "mail/send"
+        request.body = mail.build()
+        sg.api(request)
+    }
+
+    override fun magicLinkLogin(t: String): ServiceFunctionResponse {
+        val dbToken = tokenCollection.findOne(Token::sha1 eq t)
+            ?: throw NotFoundException("Invalid URL or Link already has been used.")
+        val verifier = JWT.require(Algorithm.HMAC256(ZeusConfig.getJwtSecret()))
+            .withIssuer(ZeusConfig.getJwtIssuer())
+            .withClaim("type", TokenType.TOKEN_MAGIC_URL.toString())
+            .build()
+        return try {
+            verifier.verify(dbToken.token)
+            val decoded = JWT.decode(dbToken.token)
+            val claims = decoded.claims
+            val username = claims["username"]!!.asString()
+            val token = JWT.create()
+                .withAudience(ZeusConfig.getJwtAudience())
+                .withIssuer(ZeusConfig.getJwtIssuer())
+                .withClaim("username", username)
+                .withClaim("type", TokenType.TOKEN_ACCESS.toString())
+                .withIssuedAt((Date(System.currentTimeMillis())))
+                .withExpiresAt(Date(System.currentTimeMillis() + 60000))
+                .sign(Algorithm.HMAC256(ZeusConfig.getJwtSecret()))
+            tokenCollection.deleteOne(Token::sha1 eq t)
+            ServiceFunctionResponse(true, "Login Successfull", data = UserLoginResponse(username, token))
+        } catch (ex: Exception) {
+            ServiceFunctionResponse(false, "Token Exception", ex)
+        }
+    }
 }
 

@@ -21,11 +21,39 @@ fun Route.user() {
             call.response.status(HttpStatusCode.Created)
             call.respond(SuccessfulResponse(201, res.message))
         }
-        post("login") {
-            val (uid, password) = call.receive<LoginRequest>()
-            val login = userService.login(uid, password)
-            call.response.status(HttpStatusCode.OK)
-            call.respond(SuccessfulLoginResponse(data = login.data as UserLoginResponse))
+        route("login") {
+            post("") {
+                val (uid, password) = call.receive<LoginRequest>()
+                val login = userService.login(uid, password)
+                call.response.status(HttpStatusCode.OK)
+                call.respond(SuccessfulLoginResponse(data = login.data as UserLoginResponse))
+            }
+            post("/generate_magic_link") {
+                val uid = call.parameters["uid"] ?: throw BadRequestException("Email is required.")
+                userService.generateMagicLink(uid)
+                call.response.status(HttpStatusCode.OK)
+                call.respond(SuccessfulResponse(message = "Expect a Magic signin link in your inbox."))
+            }
+            post("/magic") {
+                val uid = call.parameters["t"] ?: throw BadRequestException("Token is required.")
+                val res = userService.magicLinkLogin(uid)
+                when (res.success) {
+                    true -> {
+                        call.response.status(HttpStatusCode.OK)
+                        call.respond(SuccessfulLoginResponse(data = res.data as UserLoginResponse))
+                    }
+                    false -> {
+                        when (res.error) {
+                            is TokenExpiredException -> {
+                                throw UnauthorizedException("Link Expired. Please generate a new link.")
+                            }
+                            else -> {
+                                throw res.error!!
+                            }
+                        }
+                    }
+                }
+            }
         }
         route("pw/") {
             post("reset_email") {

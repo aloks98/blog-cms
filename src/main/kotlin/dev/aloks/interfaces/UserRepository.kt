@@ -10,4 +10,6 @@ interface UserRepository {
     fun generateResetPasswordLink(uid: String)
     fun verifyResetPasswordToken(t: String): ServiceFunctionResponse
     fun resetPassword(t: String, password: String): ServiceFunctionResponse
+    fun generateMagicLink(uid: String)
+    fun magicLinkLogin(t: String): ServiceFunctionResponse
 }
