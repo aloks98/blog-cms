@@ -1,10 +1,15 @@
 package dev.aloks.interfaces
 
+import dev.aloks.models.BlogRequest
+import dev.aloks.models.BlogUpdateRequest
+import dev.aloks.models.ServiceFunctionResponse
+
 interface BlogRepository {
-    fun createBlog()
-    fun getAllBlogs()
-    fun getBlogById()
-    fun getUserBlogs()
-    fun editBlog()
-    fun deleteBlog()
+    fun createBlog(blog: BlogRequest, username: String): ServiceFunctionResponse
+    fun getAllBlogs(): ServiceFunctionResponse
+    fun getBlogById(id: String): ServiceFunctionResponse
+    fun getBlogBySlug(slug: String): ServiceFunctionResponse
+    fun getUserBlogs(username: String): ServiceFunctionResponse
+    fun editBlog(slug: String, blog: BlogUpdateRequest)
+    fun deleteBlog(slug: String)
 }

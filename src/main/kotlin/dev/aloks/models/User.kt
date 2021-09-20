@@ -12,7 +12,7 @@ data class User (
     val email: String,
     val username: String,
     val password: String,
-    val blogs: MutableSet<String>? = null
+    val blogs: MutableSet<String>? = mutableSetOf()
 )
 
 @Serializable
