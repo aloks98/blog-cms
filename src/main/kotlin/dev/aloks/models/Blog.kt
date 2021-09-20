@@ -21,6 +21,7 @@ data class Blog(
 
 @Serializable
 data class BlogRequest(
+    val slug: String,
     val series: String? = null,
     val introduction: String,
     val content: String,
