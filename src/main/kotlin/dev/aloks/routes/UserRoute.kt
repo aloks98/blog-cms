@@ -12,7 +12,6 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import java.lang.Exception
 
 fun Route.user() {
     val userService = UserService()
