@@ -29,3 +29,10 @@ data class SuccessfulLoginResponse (
     val message: String = "Login Successfull",
     val data: UserLoginResponse
 )
+@Serializable
+data class SuccessfulUserFetchResponse (
+    val status: Int = 200,
+    val message: String = "User fetch sucessfull.",
+    val data: UserResponse
+)
+

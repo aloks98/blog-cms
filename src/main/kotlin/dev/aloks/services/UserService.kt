@@ -57,7 +57,7 @@ class UserService: UserRepository {
             .withClaim("username", user.username)
             .withClaim("type", TokenType.TOKEN_ACCESS.toString())
             .withIssuedAt((Date(System.currentTimeMillis())))
-            .withExpiresAt(Date(System.currentTimeMillis() + 60000))
+            .withExpiresAt(Date(System.currentTimeMillis() + 86400000))
             .sign(Algorithm.HMAC256(ZeusConfig.getJwtSecret()))
         return ServiceFunctionResponse(true, "Login Successfull", data = UserLoginResponse(user.username, token))
     }
@@ -120,11 +120,10 @@ class UserService: UserRepository {
 
             val decoded = JWT.decode(dbToken.token)
             val claims = decoded.claims
-            val uid = claims["username"].toString()
+            val username = claims["username"]!!.asString()
 
             val hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt())
-
-            userCollection.updateOne(User::username eq uid, setValue(User::password, hashedPassword))
+            userCollection.updateOne(User::username eq username, setValue(User::password, hashedPassword))
             tokenCollection.deleteOne(Token::sha1 eq t)
             ServiceFunctionResponse(true, "Password Successfully Updated")
         } catch (ex: Exception) {
@@ -190,6 +189,20 @@ class UserService: UserRepository {
         } catch (ex: Exception) {
             ServiceFunctionResponse(false, "Token Exception", ex)
         }
+    }
+
+    override fun getSelfProfile(username: String): ServiceFunctionResponse {
+        val user = userCollection.findOne(User::username eq username)
+            ?: throw NotFoundException("User not found.")
+        val resUser = UserResponse(user._id.toString(), user.first_name+" "+user.last_name, user.email, user.username, user.blogs)
+        return ServiceFunctionResponse(true, "User details fetch successfull", data = resUser)
+    }
+
+    override fun updateSelfProfile(username: String, user: UserUpdateRequest): ServiceFunctionResponse {
+        val dbUser = userCollection.findOne(User::username eq username)
+            ?: throw NotFoundException("User not found.")
+        userCollection.updateOneById(dbUser._id, user, updateOnlyNotNullProperties = true)
+        return ServiceFunctionResponse(true, "User updated successfully")
     }
 }
 

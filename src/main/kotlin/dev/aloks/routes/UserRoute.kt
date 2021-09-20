@@ -6,6 +6,8 @@ import dev.aloks.models.*
 import dev.aloks.plugins.*
 import dev.aloks.services.UserService
 import io.ktor.application.*
+import io.ktor.auth.*
+import io.ktor.auth.jwt.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -104,6 +106,25 @@ fun Route.user() {
                             }
                         }
                     }
+                }
+            }
+        }
+        authenticate("jwt") {
+            route("self") {
+                get("") {
+                    val principal = call.principal<JWTPrincipal>()
+                    val username = principal!!.payload.getClaim("username").asString()
+                    val res = userService.getSelfProfile(username)
+                    call.response.status(HttpStatusCode.OK)
+                    call.respond(SuccessfulUserFetchResponse(data = res.data as UserResponse))
+                }
+                post("/update") {
+                    val principal = call.principal<JWTPrincipal>()
+                    val username = principal!!.payload.getClaim("username").asString()
+                    val user = call.receive<UserUpdateRequest>()
+                    val res = userService.updateSelfProfile(username, user)
+                    call.response.status(HttpStatusCode.OK)
+                    call.respond(SuccessfulResponse(200, res.message))
                 }
             }
         }
