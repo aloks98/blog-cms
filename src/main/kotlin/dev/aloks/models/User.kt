@@ -25,13 +25,20 @@ data class UserRequest (
 )
 
 @Serializable
+data class UserUpdateRequest (
+    val first_name: String? = null,
+    val last_name: String? = null,
+    val email: String? = null,
+)
+
+
+@Serializable
 data class UserResponse (
     val id: String,
-    val first_name: String,
-    val last_name: String,
+    val name: String,
     val email: String,
     val username: String,
-    val blogs: MutableSet<String>
+    val blogs: MutableSet<String>? = null
 )
 
 @Serializable
@@ -43,11 +50,6 @@ data class LoginRequest (
 @Serializable
 data class PasswordResetRequest (
     val password: String
-        )
-
-@Serializable
-data class MagicLinkRequest (
-    val uid: String
         )
 
 @Serializable
