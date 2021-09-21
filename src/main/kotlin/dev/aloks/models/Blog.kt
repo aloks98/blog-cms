@@ -1,22 +1,20 @@
 package dev.aloks.models
 
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.bson.types.ObjectId
 import java.time.LocalDateTime
 
-@Serializable
 data class Blog(
-    @Contextual val _id: ObjectId = ObjectId(),
+    val _id: ObjectId = ObjectId(),
     val slug: String,
     val series: String? = null,
     val introduction: String,
     val content: String,
     val published: Boolean? = true,
     val featured: Boolean? = false,
-    @Contextual val created_by: ObjectId,
-    @Contextual val created_at: LocalDateTime? = LocalDateTime.now(),
-    @Contextual val updated_at: LocalDateTime? = LocalDateTime.now()
+    val created_by: ObjectId,
+    val created_at: LocalDateTime? = LocalDateTime.now(),
+    val updated_at: LocalDateTime? = LocalDateTime.now()
 )
 
 @Serializable
@@ -40,7 +38,6 @@ data class BlogUpdateRequest(
 
 @Serializable
 data class BlogCreatedBy(
-    val id: String,
     val name: String,
     val username: String
 )
@@ -49,10 +46,11 @@ data class BlogCreatedBy(
 data class BlogResponse(
     val id: String,
     val slug: String,
-    val series: String,
+    val series: String?,
     val introduction: String,
     val content: String,
-    val published: Boolean,
+    val published: Boolean?,
+    val featured: Boolean?,
     val createdBy: BlogCreatedBy,
-    @Contextual val updated_at: LocalDateTime
+    val updated_at: String
 )

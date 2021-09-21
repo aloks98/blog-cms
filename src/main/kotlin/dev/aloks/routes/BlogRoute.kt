@@ -2,6 +2,7 @@ package dev.aloks.routes
 
 import dev.aloks.models.BlogRequest
 import dev.aloks.models.SuccessfulResponse
+import dev.aloks.models.SuccessfullAllBlogsFetchResponse
 import dev.aloks.services.BlogService
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -34,7 +35,9 @@ fun Route.blogs() {
             }
         }
         get("all") {
-
+            val res = blogService.getAllBlogs()
+            call.response.status(HttpStatusCode.OK)
+            call.respond(SuccessfullAllBlogsFetchResponse(data = res))
         }
         get("slug/{slug}") {
 

@@ -36,3 +36,10 @@ data class SuccessfulUserFetchResponse (
     val data: UserResponse
 )
 
+@Serializable
+data class SuccessfullAllBlogsFetchResponse (
+    val status: Int = 200,
+    val message: String = "All blogs fetch successfull.",
+    val data: MutableList<BlogResponse>
+)
+

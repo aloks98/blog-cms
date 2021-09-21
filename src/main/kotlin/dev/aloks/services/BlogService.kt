@@ -6,10 +6,7 @@ import dev.aloks.plugins.BadRequestException
 import dev.aloks.plugins.NotFoundException
 import dev.aloks.repository.*
 import org.bson.types.ObjectId
-import org.litote.kmongo.eq
-import org.litote.kmongo.findOne
-import org.litote.kmongo.setValue
-import org.litote.kmongo.updateOneById
+import org.litote.kmongo.*
 import org.litote.kmongo.util.idValue
 import org.slf4j.LoggerFactory
 
@@ -44,8 +41,27 @@ class BlogService: BlogRepository {
         return ServiceFunctionResponse(true, "Blog successfully created")
     }
 
-    override fun getAllBlogs(): ServiceFunctionResponse {
-        TODO("Not yet implemented")
+    override fun getAllBlogs(): MutableList<BlogResponse> {
+        val blogs = blogCollection.find()
+        val allBlogs: MutableList<BlogResponse> = mutableListOf()
+        blogs.forEach {
+            logger.debug(it.toString())
+            val user = userCollection.findOneById(it.created_by)!!
+            val blogCreatedBy = BlogCreatedBy(user.first_name+ " " + user.last_name, user.username)
+            val blog = BlogResponse(
+                it._id.toHexString(),
+                it.slug,
+                it.series,
+                it.introduction,
+                it.content,
+                it.published,
+                it.featured,
+                blogCreatedBy,
+                it.updated_at.toString()
+            )
+            allBlogs.add(blog)
+        }
+        return allBlogs
     }
 
     override fun getBlogById(id: String): ServiceFunctionResponse {
