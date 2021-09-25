@@ -8,8 +8,8 @@ import dev.aloks.models.ServiceFunctionResponse
 interface BlogRepository {
     fun createBlog(blog: BlogRequest, username: String): ServiceFunctionResponse
     fun getAllBlogs(): MutableList<BlogResponse>
-    fun getBlogById(id: String): ServiceFunctionResponse
-    fun getBlogBySlug(slug: String): ServiceFunctionResponse
+    fun getBlogById(id: String): BlogResponse
+    fun getBlogBySlug(slug: String): BlogResponse
     fun getUserBlogs(username: String): ServiceFunctionResponse
     fun editBlog(slug: String, blog: BlogUpdateRequest)
     fun deleteBlog(slug: String)

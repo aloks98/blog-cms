@@ -7,7 +7,6 @@ import dev.aloks.plugins.NotFoundException
 import dev.aloks.repository.*
 import org.bson.types.ObjectId
 import org.litote.kmongo.*
-import org.litote.kmongo.util.idValue
 import org.slf4j.LoggerFactory
 
 class BlogService: BlogRepository {
@@ -64,11 +63,24 @@ class BlogService: BlogRepository {
         return allBlogs
     }
 
-    override fun getBlogById(id: String): ServiceFunctionResponse {
-        TODO("Not yet implemented")
+    override fun getBlogById(id: String): BlogResponse {
+        val dbBlog = blogCollection.findOneById(ObjectId(id)) ?: throw NotFoundException("Blog not found.")
+        val user = userCollection.findOneById(dbBlog.created_by)!!
+        val blogCreatedBy = BlogCreatedBy(user.first_name + " " + user.last_name, user.username)
+        return BlogResponse(
+            dbBlog._id.toHexString(),
+            dbBlog.slug,
+            dbBlog.series,
+            dbBlog.introduction,
+            dbBlog.content,
+            dbBlog.published,
+            dbBlog.featured,
+            blogCreatedBy,
+            dbBlog.updated_at.toString()
+        )
     }
 
-    override fun getBlogBySlug(slug: String): ServiceFunctionResponse {
+    override fun getBlogBySlug(slug: String): BlogResponse {
         TODO("Not yet implemented")
     }
 

@@ -3,6 +3,8 @@ package dev.aloks.routes
 import dev.aloks.models.BlogRequest
 import dev.aloks.models.SuccessfulResponse
 import dev.aloks.models.SuccessfullAllBlogsFetchResponse
+import dev.aloks.models.SuccessfullBlogFetchResponse
+import dev.aloks.plugins.BadRequestException
 import dev.aloks.services.BlogService
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -42,8 +44,11 @@ fun Route.blogs() {
         get("slug/{slug}") {
 
         }
-        get("id/{bid}") {
-
+        get("id") {
+            val bid = call.parameters["b"] ?: throw BadRequestException("Please provide blog ID.")
+            val blog = blogService.getBlogById(bid)
+            call.response.status(HttpStatusCode.OK)
+            call.respond(SuccessfullBlogFetchResponse(data = blog))
         }
     }
 }
