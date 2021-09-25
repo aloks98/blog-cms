@@ -44,7 +44,6 @@ class BlogService: BlogRepository {
         val blogs = blogCollection.find()
         val allBlogs: MutableList<BlogResponse> = mutableListOf()
         blogs.forEach {
-            logger.debug(it.toString())
             val user = userCollection.findOneById(it.created_by)!!
             val blogCreatedBy = BlogCreatedBy(user.first_name+ " " + user.last_name, user.username)
             val blog = BlogResponse(
@@ -97,8 +96,27 @@ class BlogService: BlogRepository {
         )
     }
 
-    override fun getUserBlogs(username: String): ServiceFunctionResponse {
-        TODO("Not yet implemented")
+    override fun getUserBlogs(username: String): MutableList<BlogResponse> {
+        val user = userCollection.findOne(User::username eq username)!!
+        val userBlogs: MutableList<BlogResponse> = mutableListOf()
+
+        val blogCreatedBy = BlogCreatedBy(user.first_name+ " " + user.last_name, user.username)
+        val blogs = blogCollection.find(Blog::created_by eq user._id)
+        blogs.forEach {
+            val blog = BlogResponse(
+                it._id.toHexString(),
+                it.slug,
+                it.series,
+                it.introduction,
+                it.content,
+                it.published,
+                it.featured,
+                blogCreatedBy,
+                it.updated_at.toString()
+            )
+            userBlogs.add(blog)
+        }
+        return userBlogs
     }
 
     override fun editBlog(slug: String, blog: BlogUpdateRequest) {

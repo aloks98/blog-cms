@@ -1,9 +1,6 @@
 package dev.aloks.routes
 
-import dev.aloks.models.BlogRequest
-import dev.aloks.models.SuccessfulResponse
-import dev.aloks.models.SuccessfullAllBlogsFetchResponse
-import dev.aloks.models.SuccessfullBlogFetchResponse
+import dev.aloks.models.*
 import dev.aloks.plugins.BadRequestException
 import dev.aloks.services.BlogService
 import io.ktor.application.*
@@ -33,13 +30,17 @@ fun Route.blogs() {
 
             }
             get("user") {
-
+                val principal = call.principal<JWTPrincipal>()
+                val username = principal!!.payload.getClaim("username").asString()
+                val blogs = blogService.getUserBlogs(username)
+                call.response.status(HttpStatusCode.OK)
+                call.respond(SuccessfullMultipleBlogsFetchResponse(data = blogs))
             }
         }
         get("all") {
             val res = blogService.getAllBlogs()
             call.response.status(HttpStatusCode.OK)
-            call.respond(SuccessfullAllBlogsFetchResponse(data = res))
+            call.respond(SuccessfullMultipleBlogsFetchResponse(data = res))
         }
         get("slug") {
             val slug = call.parameters["s"] ?: throw BadRequestException("Please provide blog slug.")

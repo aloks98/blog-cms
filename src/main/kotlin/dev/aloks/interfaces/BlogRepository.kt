@@ -10,7 +10,7 @@ interface BlogRepository {
     fun getAllBlogs(): MutableList<BlogResponse>
     fun getBlogById(id: String): BlogResponse
     fun getBlogBySlug(slug: String): BlogResponse
-    fun getUserBlogs(username: String): ServiceFunctionResponse
+    fun getUserBlogs(username: String): MutableList<BlogResponse>
     fun editBlog(slug: String, blog: BlogUpdateRequest)
     fun deleteBlog(slug: String)
 }
