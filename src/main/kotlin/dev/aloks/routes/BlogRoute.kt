@@ -41,8 +41,11 @@ fun Route.blogs() {
             call.response.status(HttpStatusCode.OK)
             call.respond(SuccessfullAllBlogsFetchResponse(data = res))
         }
-        get("slug/{slug}") {
-
+        get("slug") {
+            val slug = call.parameters["s"] ?: throw BadRequestException("Please provide blog slug.")
+            val blog = blogService.getBlogBySlug(slug)
+            call.response.status(HttpStatusCode.OK)
+            call.respond(SuccessfullBlogFetchResponse(data = blog))
         }
         get("id") {
             val bid = call.parameters["b"] ?: throw BadRequestException("Please provide blog ID.")

@@ -81,7 +81,20 @@ class BlogService: BlogRepository {
     }
 
     override fun getBlogBySlug(slug: String): BlogResponse {
-        TODO("Not yet implemented")
+        val dbBlog = blogCollection.findOne(Blog::slug eq slug) ?: throw NotFoundException("Blog not found.")
+        val user = userCollection.findOneById(dbBlog.created_by)!!
+        val blogCreatedBy = BlogCreatedBy(user.first_name + " " + user.last_name, user.username)
+        return BlogResponse(
+            dbBlog._id.toHexString(),
+            dbBlog.slug,
+            dbBlog.series,
+            dbBlog.introduction,
+            dbBlog.content,
+            dbBlog.published,
+            dbBlog.featured,
+            blogCreatedBy,
+            dbBlog.updated_at.toString()
+        )
     }
 
     override fun getUserBlogs(username: String): ServiceFunctionResponse {
