@@ -129,7 +129,11 @@ class BlogService: BlogRepository {
         return ServiceFunctionResponse(true, "Blog updated successfully")
     }
 
-    override fun deleteBlog(slug: String) {
-        TODO("Not yet implemented")
+    override fun deleteBlog(slug: String, username: String): ServiceFunctionResponse {
+        val user = userCollection.findOne(User::username eq username)!!
+        val dbBlog = blogCollection.findOne(Blog::slug eq slug) ?: throw NotFoundException("Blog not found.")
+        if (dbBlog.created_by != user._id) { throw ForbiddenException() }
+        blogCollection.deleteOneById(dbBlog._id)
+        return ServiceFunctionResponse(true, "Blog deleted successfully")
     }
 }

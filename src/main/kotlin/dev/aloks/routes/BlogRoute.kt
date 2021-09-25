@@ -33,7 +33,12 @@ fun Route.blogs() {
                 call.respond(SuccessfulResponse(201, res.message))
             }
             delete("{slug}/delete") {
-
+                val principal = call.principal<JWTPrincipal>()
+                val username = principal!!.payload.getClaim("username").asString()
+                val slug = call.parameters["slug"] ?: throw BadRequestException("Please provide blog slug.")
+                val res = blogService.deleteBlog(slug, username)
+                call.response.status(HttpStatusCode.Accepted)
+                call.respond(SuccessfulResponse(202, res.message))
             }
             get("user") {
                 val principal = call.principal<JWTPrincipal>()
