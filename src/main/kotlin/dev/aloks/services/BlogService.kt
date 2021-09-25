@@ -3,7 +3,9 @@ package dev.aloks.services
 import dev.aloks.interfaces.BlogRepository
 import dev.aloks.models.*
 import dev.aloks.plugins.BadRequestException
+import dev.aloks.plugins.ForbiddenException
 import dev.aloks.plugins.NotFoundException
+import dev.aloks.plugins.UnauthorizedException
 import dev.aloks.repository.*
 import org.bson.types.ObjectId
 import org.litote.kmongo.*
@@ -119,8 +121,12 @@ class BlogService: BlogRepository {
         return userBlogs
     }
 
-    override fun editBlog(slug: String, blog: BlogUpdateRequest) {
-        TODO("Not yet implemented")
+    override fun editBlog(slug: String, blog: BlogUpdateRequest, username: String): ServiceFunctionResponse {
+        val user = userCollection.findOne(User::username eq username)!!
+        val dbBlog = blogCollection.findOne(Blog::slug eq slug) ?: throw NotFoundException("Blog not found.")
+        if (dbBlog.created_by != user._id) { throw ForbiddenException() }
+        blogCollection.updateOneById(dbBlog._id, blog, updateOnlyNotNullProperties = true)
+        return ServiceFunctionResponse(true, "Blog updated successfully")
     }
 
     override fun deleteBlog(slug: String) {

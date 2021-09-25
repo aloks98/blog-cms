@@ -24,7 +24,13 @@ fun Route.blogs() {
                 call.respond(SuccessfulResponse(201, res.message))
             }
             patch("{slug}/edit") {
-
+                val principal = call.principal<JWTPrincipal>()
+                val username = principal!!.payload.getClaim("username").asString()
+                val slug = call.parameters["slug"] ?: throw BadRequestException("Please provide blog slug.")
+                val blog = call.receive<BlogUpdateRequest>()
+                val res = blogService.editBlog(slug, blog, username)
+                call.response.status(HttpStatusCode.Created)
+                call.respond(SuccessfulResponse(201, res.message))
             }
             delete("{slug}/delete") {
 

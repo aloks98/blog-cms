@@ -11,6 +11,6 @@ interface BlogRepository {
     fun getBlogById(id: String): BlogResponse
     fun getBlogBySlug(slug: String): BlogResponse
     fun getUserBlogs(username: String): MutableList<BlogResponse>
-    fun editBlog(slug: String, blog: BlogUpdateRequest)
+    fun editBlog(slug: String, blog: BlogUpdateRequest, username: String): ServiceFunctionResponse
     fun deleteBlog(slug: String)
 }
