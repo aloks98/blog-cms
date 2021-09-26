@@ -1,7 +1,6 @@
 package dev.aloks.interfaces
 
 import dev.aloks.models.ServiceFunctionResponse
-import dev.aloks.models.UserLoginResponse
 import dev.aloks.models.UserRequest
 import dev.aloks.models.UserUpdateRequest
 

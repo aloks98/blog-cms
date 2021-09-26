@@ -5,7 +5,6 @@ import dev.aloks.models.*
 import dev.aloks.plugins.BadRequestException
 import dev.aloks.plugins.ForbiddenException
 import dev.aloks.plugins.NotFoundException
-import dev.aloks.plugins.UnauthorizedException
 import dev.aloks.repository.*
 import org.bson.types.ObjectId
 import org.litote.kmongo.*

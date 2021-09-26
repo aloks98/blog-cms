@@ -1,6 +1,5 @@
 package dev.aloks.plugins
 
-import com.auth0.jwt.exceptions.TokenExpiredException
 import dev.aloks.ZeusConfig
 import dev.aloks.models.ErrorResponse
 import io.ktor.application.*

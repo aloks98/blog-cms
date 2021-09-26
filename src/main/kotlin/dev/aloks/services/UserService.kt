@@ -5,14 +5,11 @@ import com.auth0.jwt.algorithms.Algorithm
 import org.springframework.security.crypto.bcrypt.BCrypt
 import org.bson.types.ObjectId
 import org.litote.kmongo.*
-
-
 import com.sendgrid.Method
 import com.sendgrid.Request
 import com.sendgrid.SendGrid
 import com.sendgrid.helpers.mail.Mail
 import com.sendgrid.helpers.mail.objects.*
-
 import dev.aloks.ZeusConfig
 import dev.aloks.interfaces.UserRepository
 import dev.aloks.models.*
@@ -20,8 +17,6 @@ import dev.aloks.plugins.*
 import dev.aloks.repository.selectTokenCollection
 import dev.aloks.repository.selectUserCollection
 import org.apache.commons.codec.digest.DigestUtils
-
-import java.io.IOException
 import java.lang.Exception
 import java.util.*
 
